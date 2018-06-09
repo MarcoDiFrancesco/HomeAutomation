@@ -28,16 +28,16 @@ void loop() {
   temperatureSensor(2); // connection with pin A1
   // print humidity and temperature
 
-  lightSensor(1); // connection with pin A2
-  // print light value
+  Serial.print(analogRead(A2)); // print light sensor n1
+  Serial.print("\t");
   
-  lightSensor(2); // connection with pin A3
-  // print light value
+  Serial.print(analogRead(A3)); // print light sensor n1
+  Serial.print("\t");
   
-  lightSensor(3); // connection with pin A4
-  // print light value
+  Serial.print(analogRead(A4)); // print light sensor n1
+  Serial.print("\t");
   
-  Serial.print(analogRead(A4)); // print gas sensor value
+//  Serial.print(analogRead(A5)); // print gas sensor value
 
   Serial.println(); // print \n to close the string that will be sent 
 
@@ -69,7 +69,10 @@ void temperatureSensor(int nSensor) {
     Serial.print("Error");
   }
   Serial.print(sensore.humidity, 1); // print humidity
+  Serial.print("\t");
+  
   Serial.print(sensore.temperature, 1); // print temperature
+  Serial.print("\t");
 }
 
 void led(int first, int last) { // led test
@@ -81,19 +84,6 @@ void led(int first, int last) { // led test
   for (int w = first; w <= last; w++) {
     digitalWrite(w, LOW);
     delay(100);
-  }
-}
-
-void lightSensor(int pin) {
-  Serial.print(pin);
-  if (pin == 1) {
-    Serial.print(analogRead(A2));
-  } else if (pin == 2) {
-    Serial.print(analogRead(A3));
-  } else if (pin == 3) {
-    Serial.print(analogRead(A4));
-  } else {
-    Serial.print("Error");
   }
 }
 
