@@ -23,19 +23,11 @@ void setup() {
 void loop() {
   Serial.print(analogRead(A0)); Serial.print("\t"); // sound sensor main room
   Serial.print(analogRead(A1)); Serial.print("\t"); // gas sensor main room
-  Serial.print(analogRead(A2)); Serial.print("\t"); // ligt red (no)
+  Serial.print(analogRead(A2)); Serial.print("\t"); // ligt sensor main room
   Serial.print(analogRead(A3)); Serial.print("\t"); // gas sensor yellow
-  
-  temperatureSensor(1); 
-  // connection with pin A4
-  // print humidity and temperature
-  
+  temperatureSensor(1); // yellow room humidity and temperature (pin A4)
   Serial.print(analogRead(A5)); Serial.print("\t"); // fire sensor red
-  
-  temperatureSensor(2); 
-  // connection with pin A6
-  // print humidity and temperature
-  
+  temperatureSensor(2); // red room humidity and temperature (pin A4)
   Serial.print(analogRead(A7)); Serial.print("\t"); // fire sensor blue
   Serial.print(analogRead(A8)); Serial.print("\t"); // smoke sensor blue
   Serial.print(analogRead(A9)); Serial.print("\t"); // light sensor blue
@@ -90,7 +82,7 @@ void loop() {
       }
     }
   }
-  delay(1000);
+  delay(500);
 }
 
 void temperatureSensor(int nSensor) {
@@ -99,7 +91,7 @@ void temperatureSensor(int nSensor) {
   } else if (nSensor == 2) {
     sensorDHT.read(DHT11_PIN2); // read data
   } else {
-    Serial.print("Error");
+    Serial.print("This sensor does not exists");
   }
   Serial.print(sensorDHT.humidity, 1); 
   // print humidity

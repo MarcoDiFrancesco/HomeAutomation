@@ -9,17 +9,6 @@ void setup()  {
   delay(5000);
 }
 
-/*
-Data order:
-  1 - temperature 1
-  2 - humidity 1
-  3 - temperature 2
-  4 - humidity 2
-  5 - light 1
-  6 - light 2
-  7 - light 3  
-*/
-
 void draw() {
   if(port.available()>0){
     input = port.readStringUntil('\n');
@@ -46,7 +35,8 @@ void draw() {
     int ledState = Integer.parseInt(resultQuery[0]);
     out[led]=int(ledState);
   }
+  
   String output = str(out[1])+str(out[2])+str(out[3])+str(out[4])+str(out[5]);
   port.write(output); // testing if works
-  delay(1000);
+  delay(500);
 }
