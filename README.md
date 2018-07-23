@@ -12,4 +12,3 @@ Step per la creazione:
 * Per importare le librerie andare su `File` →  `Prefesences` → `Sketchbook location` e incollare `C:\xampp\htdocs\HomeAutomation-master`
 * Caricare il codice nel proprio Arduino con il comando `Upload`
 * Aprire il file `processing.pde` → `processing` e avviare il programma con il triangolo `Run`
-* Entrare in [`127.0.0.1/HomeAutomation-master`](127.0.0.1/HomeAutomation-master/)
