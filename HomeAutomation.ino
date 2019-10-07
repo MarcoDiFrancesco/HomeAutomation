@@ -36,7 +36,7 @@ void loop() {
   Serial.println(); 
   // print \n to close the string that will be sent 
 
-  if (Serial.available()) {
+  if (Serial.available()) { //emh è un if
     while (Serial.available() > 0) {
       incoming = Serial.read();
 
