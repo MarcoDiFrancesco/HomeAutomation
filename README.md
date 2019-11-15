@@ -107,10 +107,10 @@ void temperatureSensor(int nSensor) {
 
 ## Raspberry
 
-Per la comunicazione seriale con Arduino viene utilizzato Processing, un programma basato sul linguaggio Java. Il programma ha lo scopo di far comunicare Arduino al database. Il programma fa richiesta al database per richiedere quali led devono essere accesi e passa questi dati ad Arduino, inoltre il programma fa la richiesta ad Arduino dei dati dei sensori per passarli al database.  
+Per la comunicazione seriale con Arduino viene utilizzato Processing, un programma basato su Java. Il programma ha lo scopo di far comunicare Arduino al database. Il programma fa richiesta al database per richiedere quali led devono essere accesi, e passa questi dati all'Arduino, inoltre il programma fa la richiesta ad Arduino dei dati dei sensori per passarli al database.  
 Il file scritto in processing è stato salvato in un file all’interno di Raspberry. Questo viene avviato all’accensione del Raspberry tramite uno script. Lo scipt è stato preso dalla [seguente pagina](https://raspberrypi.stackexchange.com/questions/8734/execute-script-on-start-up).
 
-``` Java
+``` Processing
 import processing.serial.*;
 Serial port;
 String input;
@@ -156,14 +156,10 @@ loadStrings("https://www.marcodifrancesco.com/tesina/insertData.php?data1="+data
 
 ## Database
 
-L'immagazzinamento dei sensori e dei led viene effettuato da un database.  
-Per la gestione dei dati presenti all’interno viene il database management system: MySql.
-
-#### Struttura del database
-La struttura del database prevede due tabelle: sensori e led. Tra queste due tabelle non è prevista alcuna relazione.
+I dati dei sensori e dei led vengono salvati all'interno del database relazione. Come DBMS utilizzo MySql. La struttura è organizzata in due tabelle: sensori e led. Tra queste due tabelle non è prevista alcuna relazione.
 
 Le due tabelle si differenziano per la tipologia di dati in cui vengono inseriti i dati:
-per la tabella dei sensori sono stati utilizzati INT, dato che all’interno vengono immagazzinati valori interi, provenienti dai sensori; mentre nella tabella dei led sono stati utilizzati TINYINT, dato che il dato lo stato dei led può variare solamente tra 0 e 1.
+per la tabella dei sensori sono stati utilizzati `INT` provenienti dai sensori; mentre nella tabella dei led sono stati utilizzati `TINYINT`, dato che il dato lo stato dei led può variare solamente tra 0 e 1 (spento o acceso).
 
 Tabella dei sensori:
 
@@ -177,21 +173,20 @@ Tabella dei sensori:
 PRIMARY KEY (`id`)
 ```
 
-Tabella dei LED:  
+Tabella dei LED:
+
 <img src='assets/images/Database2.png' width=100>
 
 ``` SQL
-`id` INT(8) NOT NULL AUTO_INCREMENT , 
-`state` TINYINT(1) NOT NULL , 
+`id` INT(8) NOT NULL AUTO_INCREMENT ,
+`state` TINYINT(1) NOT NULL ,
 PRIMARY KEY (`id`)
 ```
 
-
 ## Query
-Per la richiesta dei dati al database sono state utilizzate delle query inserite all’interno dei file PHP presenti nel sito. Queste contengono codice SQL. Le parentesi graffe presenti all’interno del codice rappresentano i dati che vengono passati tramite PHP.
+Per la richiesta dei dati al database sono state utilizzate delle query in SQL inserite all’interno dei file PHP presenti nel sito. Le parentesi graffe presenti all’interno del codice rappresentano i dati che vengono passati tramite PHP.
 
-Query utilizzate:
-Per il controllo dello stato dei led, utilizzata sia dal sito, sia da Processing. Il sito richiede questa query in modalità POST (con la libreria di AJAX), nel momento in cui viene aggiornata la pagina HTML. Mentre questa query viene richiamata da Processing in modalità GET, e viene richiesta nel momento in cui viene effettuato il controllo se la luce é stata “accesa” o “spenta”.
+La prima query viene utilizzata dal sito, che richiede questa query in modalità POST (con la libreria di AJAX), nel momento in cui viene aggiornata la pagina HTML. Mentre questa query viene richiamata da Processing in modalità GET, e viene richiesta nel momento in cui viene effettuato il controllo se la luce é stata "accesa" o "spenta".
 
 ``` SQL
 SELECT state FROM led where id={$ledNumber}
@@ -201,11 +196,11 @@ SELECT state FROM led where id={$ledNumber}
 Per l’inserimento dei dati dei sensori. Viene richiesta da Raspberry per inserire i dati che vengono passati da Arduino. Questa pagina viene richiamata in modalità POST.
 
 ``` SQL
-INSERT INTO sensors(sensor1,sensor2,sensor3) 
+INSERT INTO sensors(sensor1,sensor2,sensor3)
 VALUES ('{$data1}', '{$data2}', '{$data3}');
 ```
 
-Query per la richiesta dei valori dei sensori inseriti nel database. La query richiede il valore massimo ($i rappresenta il numero di sensore), valore minimo e ultimo valore, per ogni sensore presente all’interno del database. L’ultimo dato presente all’interno del database é stato fatto in JOIN per fare in modo che ORDER BY non andasse a influire nei valori massimi e nei valori minimi.
+Query query viene utilizzata per la richiesta dei valori dei sensori inseriti nel database. La query richiede il valore massimo (`$i` rappresenta il numero del sensore), valore minimo e ultimo valore, per ogni sensore presente all’interno del database. L’ultimo dato presente all’interno del database é stato fatto in JOIN per fare in modo che ORDER BY non andasse a influire nei valori massimi e nei valori minimi.
 ``` SQL
 SELECT lastTable.sensor{$i} AS lastRecord,
 MAX(sensors.sensor{$i}) AS maxRecord,
@@ -218,28 +213,25 @@ MIN(sensors.sensor{$i}) AS minRecord
 ```
 
 ## Website
-### Implementazione
-Il sito web utilizzato é stato utilizzato per il progetto é stato creato in HTML utilizzando i fogli di stile CSS. La connessione al sito web può essere fatta utilizzando due siti:
-marcodifrancesco.com/tesina/
-Sito è allocato su un web server remoto fornito dall’hosting.
-marcodifrancesco.hopto.org/tesina/
-Sito di supporto in caso il primo non sia disponibile
-Il sito di supporto è stato montato su un computer in cui è installato XAMPP, e viene utilizzato per la gestione dei file (Apache) e dei database (MySQL). 
+
+Il sito web utilizzato é stato utilizzato per il progetto é stato creato in HTML utilizzando i fogli di stile CSS. La connessione al sito web può essere fatta utilizzando due siti:  
+[marcodifrancesco.com/tesina](https://marcodifrancesco.com/tesina)  
+Sito è allocato su un web server remoto fornito da un provider.  
+[marcodifrancesco.hopto.org/tesina](https://marcodifrancesco.hopto.org/tesina/)  
+Sito di supporto in caso il primo non sia disponibile.  
+Il sito di supporto è stato montato su un computer in cui è installato XAMPP, e viene utilizzato per la gestione dei file (Apache 2) e dei database (MySQL).  
 L’IP (assegnato dinamicamente) del computer viene collegato al link (marcodifrancesco.hopto.org) tramite NO-IP.
 
-### Pagine Web
 Le pagine principali inserite all’interno del sito web sono:
-index.php
-checkLed.php 
-insert.php
-updateTable.php
-insertData.php
+- [index.php](website/index.php)
+- [checkLed.php](website/checkLed.php)
+- [insert.php](website/insert.php)
+- [updateTable.php](website/updateTable.php)
+- [insertData.php](website/insertData.php)
 
-
-#### Index
- index.php è la pagina utilizzata per mostrare l’interfaccia dei led e dei sensori.
-L’interfaccia di questa pagina é costituita da una serie di bottoni con cui é possibile interagire, e una tabella che mostra i dati dei sensori.
-
+### Index
+`index.php` è la pagina utilizzata per mostrare l’interfaccia dei led e dei sensori.  
+L’interfaccia di questa pagina é costituita da una serie di bottoni con cui é possibile interagire, e una tabella che mostra i dati dei sensori.  
 I bottoni che rappresentano i led, sono stati implementati con checkbox; lo stile di questi bottoni é importato da W3School.
 
 ``` HTML
@@ -257,11 +249,9 @@ I bottoni che rappresentano i led, sono stati implementati con checkbox; lo stil
     </label>
 </div>
 ```
-
-#### Aggiornamento checkbox all’apertura
 L’aggiornamento in background dei checkbox viene gestito da uno Script, che all’apertura della pagina avvia una funzione che controlla se i checkbox debbano essere spenti (con 0) oppure accesi (con 1). Lo Script inserito utilizza le librerie di Google jQuery AJAX, per implementare i metodi che vengano aggiornati in background.
 
-#### Script
+### Script (front end)
 ``` JavaScript
 $(document).ready(function(){
     $('[onload]').each(function updateLed() {
@@ -284,7 +274,7 @@ $(document).ready(function(){
 } );
 ```
 
-#### PHP
+### PHP (back end)
 ``` PHP
 $ledNumber = $_POST[ "ledNumber" ];
 $query = "SELECT state FROM led WHERE id={$ledNumber}";
@@ -294,15 +284,14 @@ $ledState = $takedata[0];
 echo $ledState;
 ```
 
-#### Aggiornamento tabella 
 La tabella inserita all'interno della pagina contiene tutti i dati dei sensori. Quest’ultima viene interamente creata all’interno della pagina PHP, e vine e stampata all’interno del tag `<div>`. Lo script presente dentro la pagina HTML, aggiorna la tabella, una volta al secondo (1000 millisecondi) facendo richiesta alla pagina PHP. La pagina PHP richiede al database i dati dei sensori aggiornati, e passa i dati stampati direttamente dentro una tabella.
 
-HTML
+### HTML
 ``` HTML
 <div id="tableResult"></div>
 ```
 
-SCRIPT
+### JavaScript (front end)
 ``` JavaScript
 $(document).ready(function(){
     $('[onload]').each(function updateTable(){
@@ -320,7 +309,7 @@ $(document).ready(function(){
 });
 ```
 
-#### PHP
+### PHP (back end)
 ``` PHP
 echo"<table>
       <tr>
@@ -356,10 +345,9 @@ echo "<tr>
 }
 echo "</table>";
 ```
-#### Aggiornamento checkbox onClick
 L’aggiornamento dei checkbox onclick, viene gestito da uno Script che viene attivato nel momento in cui viene selezionato un checkbox. Questo controlla il numero del checkbox da cui é stato attivato, lo stato e richiede alla pagina PHP, di aggiornare lo stato di quel led. La pagina PHP crea una query che richiede al database di aggiornare lo stato del led richiesto (0 oppure 1).
 
-JavaScript
+### JavaScript (front end)
 ``` JavaScript
 $(document).ready( function () {
     $('input[type="checkbox"]').change( function () {
@@ -383,7 +371,7 @@ $(document).ready( function () {
     } );
 } );
 ```
-
+### PHP (back end)
 ``` PHP
 $ledNumber = $_POST[ "ledNumber" ];
 $query = "SELECT state FROM led WHERE id={$ledNumber}";
@@ -393,14 +381,9 @@ $ledState = $takedata[0];
 echo $ledState;
 ```
 
-## Conclusione
-
-Il codice di tutto il progetto é scritto in inglese (codice Arduino, Processing (Java), HTML, CSS, PHP) per una questione di comodità.
-
-Il codice che viene spiegato non é stato inserito integralmente, ma solamente la parte essenziale per il funzionamento di alcuni sensori e alcune luci presenti all'interno del plastico. Il codice integrale è presente sulla pagina: github.com/MarcoDiFrancesco/HomeAutomation
-
-
 ---------------------------------------------------------
+
+# How to implement
 
 Questo progetto prevede la gestione della casa domotica tramite un Web Server, sia remoto che locale.
 Per l'utilizzo di un server locale si deve utilizzare il programma XAMPP.
