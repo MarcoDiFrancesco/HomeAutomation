@@ -1,5 +1,5 @@
 # Home automation
-## Introduzione del progetto
+## Introduzione
 Questo progetto, utilizza l'architettutra client-server per la gestione dei sistemi IOT da remoto tramite un sito web.
 
 ## Componenti utilizzati
@@ -23,7 +23,7 @@ La comunicazione dei dati tra il sito web e i sensori è bidirezionale. I dati c
 La programmazione di questo microcontrollore avviene tramite l'ambiente di sviluppo integrato: Arduino.  
 Questa applicazione va a prendere i dati dei vari sensori connessi tramite i pin, e va a leggere se i led devono essere accesi o spenti, per poi aggiornarli.
 
-``` Arduino
+``` C++
 #include <dht11.h>
 
 #define DHT11_PIN2 A1 // temperature sensor n1
@@ -48,24 +48,24 @@ void setup() {
 void loop() {
   //  led(8, 13); // firstPin, lastPin
 
-  temperatureSensor(1); 
+  temperatureSensor(1);
   // connection with pin A0
   // print humidity and temperature
-  
-  temperatureSensor(2); 
+
+  temperatureSensor(2);
   // connection with pin A1
   // print humidity and temperature
 
-  Serial.print(analogRead(A2)); 
+  Serial.print(analogRead(A2));
   // print light sensor n1
   Serial.print("\t");
-  
-  Serial.print(analogRead(A3)); 
+
+  Serial.print(analogRead(A3));
   // print light sensor n1
   Serial.print("\t");
-  
-  Serial.println(); 
-  // print \n to close the string that will be sent 
+
+  Serial.println();
+  // print \n to close the string that will be sent
 
   if (Serial.available()) {
     while (Serial.available() > 0) {
@@ -94,15 +94,14 @@ void temperatureSensor(int nSensor) {
   } else {
     Serial.print("Error");
   }
-  Serial.print(sensore.humidity, 1); 
+  Serial.print(sensore.humidity, 1);
   // print humidity
   Serial.print("\t");
-  
-  Serial.print(sensore.temperature, 1); 
+
+  Serial.print(sensore.temperature, 1);
   // print temperature
   Serial.print("\t");
 }
-
 ```
 
 ## Raspberry
@@ -110,7 +109,7 @@ void temperatureSensor(int nSensor) {
 Per la comunicazione seriale con Arduino viene utilizzato Processing, un programma basato su Java. Il programma ha lo scopo di far comunicare Arduino al database. Il programma fa richiesta al database per richiedere quali led devono essere accesi, e passa questi dati all'Arduino, inoltre il programma fa la richiesta ad Arduino dei dati dei sensori per passarli al database.  
 Il file scritto in processing è stato salvato in un file all’interno di Raspberry. Questo viene avviato all’accensione del Raspberry tramite uno script. Lo scipt è stato preso dalla [seguente pagina](https://raspberrypi.stackexchange.com/questions/8734/execute-script-on-start-up).
 
-``` Processing
+``` C++
 import processing.serial.*;
 Serial port;
 String input;
@@ -129,10 +128,10 @@ void draw() {
     input = trim(input);
     int dataSensors[];
     dataSensors = int(split(input,'\t'));
-    Try{ 
-// link to pass in POST the data
-loadStrings("https://www.marcodifrancesco.com/tesina/insertData.php?data1="+dataSensors[0]+
-"&data2="+dataSensors[1]+"&data3="+dataSensors[2]);
+    Try{
+      // link to pass in POST the data
+      loadStrings("https://www.marcodifrancesco.com/tesina/insertData.php?data1="+dataSensors[0]+
+      "&data2="+dataSensors[1]+"&data3="+dataSensors[2]);
     } catch (Exception e) {
       System.out.println("Exception occurred");
     }
@@ -294,18 +293,18 @@ La tabella inserita all'interno della pagina contiene tutti i dati dei sensori. 
 ### JavaScript (front end)
 ``` JavaScript
 $(document).ready(function(){
-    $('[onload]').each(function updateTable(){
-        $.ajax({
-            url:"updateTable.php",
-            success:
-            function(tableResult){
-                $('#tableResult').html(tableResult);
-                setTimeout(function(){
-                    updateTable();
-                },1000); // update every sec
-            }
-        });
+  $('[onload]').each(function updateTable(){
+    $.ajax({
+      url:"updateTable.php",
+      success:
+      function(tableResult){
+        $('#tableResult').html(tableResult);
+        setTimeout(function(){
+          updateTable();
+        },1000); // update every sec
+      }
     });
+  });
 });
 ```
 
@@ -350,25 +349,25 @@ L’aggiornamento dei checkbox onclick, viene gestito da uno Script che viene at
 ### JavaScript (front end)
 ``` JavaScript
 $(document).ready( function () {
-    $('input[type="checkbox"]').change( function () {
-        var ledNumber = $( this ).val();
-        if ( this.checked ) {
-            var ledState = 1;
-        } else {
-            var ledState = 0;
-        }
-        $.ajax( {
-            url: "insert.php",
-            method: "POST",
-            data: {
-                ledState: ledState,
-                ledNumber: ledNumber
-            },
-            success: function(risposta) {
-                $('#result').html("Update "+risposta);
-            }
-        } );
+  $('input[type="checkbox"]').change( function () {
+    var ledNumber = $( this ).val();
+    if ( this.checked ) {
+      var ledState = 1;
+    } else {
+      var ledState = 0;
+    }
+    $.ajax( {
+      url: "insert.php",
+      method: "POST",
+      data: {
+        ledState: ledState,
+        ledNumber: ledNumber
+      },
+      success: function(risposta) {
+        $('#result').html("Update "+risposta);
+      }
     } );
+  } );
 } );
 ```
 ### PHP (back end)
